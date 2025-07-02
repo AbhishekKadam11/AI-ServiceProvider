@@ -37,7 +37,7 @@ export class AppContainer {
 
     public async listen() {
         this.httpServer = this.app.listen(this.appConfig.applicationPort, () => {
-            console.log(`[${this.appName}]: Server is running at http://localhost:${this.appConfig.applicationPort}`);
+            console.log(`[${this.appName}]: Express server is running at http://localhost:${this.appConfig.applicationPort}`);
         })
     }
 }
