@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import { IncomingMessage, ServerResponse, createServer, Server } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import { AppEnvVariables } from './app-env-variables';
+import { WebSocket } from './web-socket';
 
 export class SocketContainer {
     protected app: Application;
@@ -23,7 +24,12 @@ export class SocketContainer {
         // this.app.use(bodyParser.urlencoded({ extended: false }));
         // this.app.use(errorHandler);
         this.socketServer = createServer(this.app);
-        const io = new SocketIoServer(this.socketServer);
+        const io = WebSocket.getInstance(this.socketServer);
+
+        io.initializeHandlers([{
+            path: '/', handler: ''
+        }])
+        
 
         io.on("connection", (...params) => {
             console.log(params);
