@@ -3,11 +3,13 @@ import { IncomingMessage, Server as httpServer, ServerResponse, createServer } f
 
 interface ICORS {
     origin: string,
+    allowedHeaders: string[]
     methods: string[]
 }
 
 const WEBSOCKET_CORS: ICORS = {
-   origin: "*",
+   origin: '*',
+   allowedHeaders: ['Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
    methods: ["GET", "POST"]
 }
 
@@ -16,7 +18,9 @@ export class WebSocket extends Server {
    private static io: WebSocket;
 
    constructor(httpServer: httpServer<typeof IncomingMessage, typeof ServerResponse> | undefined) {
-       super(httpServer);
+       super(httpServer, {
+            cors: WEBSOCKET_CORS
+        });
    }
 
    public static getInstance(httpServer?: httpServer<typeof IncomingMessage, typeof ServerResponse> | undefined): WebSocket {

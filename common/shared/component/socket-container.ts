@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse, createServer, Server } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import { AppEnvVariables } from './app-env-variables';
 import { WebSocket } from './web-socket';
+import { ChatRoom } from '../component/chat-room';
 
 export class SocketContainer {
     protected app: Application;
@@ -27,13 +28,19 @@ export class SocketContainer {
         const io = WebSocket.getInstance(this.socketServer);
 
         io.initializeHandlers([{
-            path: '/', handler: ''
+            path: '/projectId', handler: new ChatRoom()
         }])
-        
 
-        io.on("connection", (...params) => {
-            console.log(params);
-        });
+        // io.of('/projectId').on('connection', function (socket) {
+        //     console.log('simulator1_Namespace socket connected');
+
+        //     socket.on('SOURCE', function (SOURCE) {
+        //         console.log('simulator1_Namespace SOURCE:', SOURCE);
+        //     });
+        // });
+        // io.on("connection", (...params) => {
+        //     console.log("connection", params);
+        // });
 
         process.on('SIGTERM', signal => {
             console.log(`Process ${process.pid} received a SIGTERM signal`)
