@@ -1,4 +1,4 @@
-import { isSlocInvalid } from "./time-data.utils";
+import { GoogleGenAIConfig } from "../../config/google-genai";
 import { WorkerManager } from "./worker-manager";
 
 interface IError {
@@ -6,10 +6,8 @@ interface IError {
 }
 export class ChatService {
 
-    private readonly enqued = "pending";
-
     constructor(
-
+        private genAI = new GoogleGenAIConfig().getGenAI()
     ) {
 
     }
@@ -17,10 +15,10 @@ export class ChatService {
     public async aggregationTaskCreator(payload: any): Promise<any> {
         let taskToExecute = new Map<string, any>();
 
-       // taskToExecute.set(taskId, payload);
+        // taskToExecute.set(taskId, payload);
         this.taskWorkerHandler(taskToExecute);
 
-        return { };
+        return {};
     }
 
     private taskWorkerHandler(taskToExecute: Map<string, any>) {
@@ -30,6 +28,35 @@ export class ChatService {
         });
         workerManager.assign(taskToExecute)
 
+    }
+
+    public async sendGenAIRequest(payload: any) {
+        try {
+            const requestParams = {
+                responseMimeType: "application/json",
+                // responseSchema: {
+                //     type: Type.ARRAY,
+                //     items: {
+                //         type: Type.OBJECT,
+                //         properties: {
+                //             date: { type: Type.STRING, default: new Date().toISOString() },
+                //             reply: { type: Type.BOOLEAN, default: false },
+                //             type: { type: Type.STRING, default: 'text' },
+
+                //         }
+                //     }
+                // }
+
+            };
+            return await this.genAI.models.generateContent({
+                model: "gemini-2.0-flash",
+                contents: payload,
+                config: requestParams
+            });
+        } catch (error) {
+            console.error("Error in sendGenAIRequest:", error);
+            throw error;
+        }
     }
 
 

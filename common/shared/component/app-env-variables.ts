@@ -8,4 +8,8 @@ export class AppEnvVariables {
     public get socketApplicationPort(): number {
         return parseInt(this.processEnv.SOCKET_APPLICATION_PORT || "8001");
     }
+
+    public get googleGenAiApiKey(): string {
+        return this.processEnv.GOOGLE_GENAI_API_KEY || "";
+    }
 }

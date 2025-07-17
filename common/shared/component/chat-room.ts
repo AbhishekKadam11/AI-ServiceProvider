@@ -1,38 +1,23 @@
 import { Socket } from "socket.io";
 import SocketInterface from "../interface/socketInterface";
 import { WebSocket } from "./web-socket";
-import { GoogleGenAI, Type } from "@google/genai";
+import { ChatService } from "../service/chat.service";
 
 export class ChatRoom implements SocketInterface {
-    constructor(private genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' })) {
+    constructor(private chatService = new ChatService()) {
+        // Initialize any other properties or configurations if needed
+        console.log('ChatRoom initialized with Google GenAI');
     }
 
     async handleConnection(socket: Socket) {
         console.log('simulator1_Namespace socket connected from chat room');
         // console.log('simulator1_Namespace socket connected');
-        const requestParams = {
-            responseMimeType: "application/json",
-            // responseSchema: {
-            //     type: Type.ARRAY,
-            //     items: {
-            //         type: Type.OBJECT,
-            //         properties: {
-            //             date: { type: Type.STRING, default: new Date().toISOString() },
-            //             reply: { type: Type.BOOLEAN, default: false },
-            //             type: { type: Type.STRING, default: 'text' },
-                 
-            //         }
-            //     }
-            // }
-
-        };
+      
         socket.on('Source', async (source: any) => {
             console.log('simulator1_Namespace Source:', source);
-            const result = await this.genAI.models.generateContent({
-                model: "gemini-2.0-flash",
-                contents: source,
-                config: requestParams
-            });
+
+            const result = await this.chatService.sendGenAIRequest(source);
+            console.log('simulator1_Namespace result:', result);
 
             console.log('result', JSON.stringify(result))
             // socket.emit('ping', 'Hi! I am a live socket connection');

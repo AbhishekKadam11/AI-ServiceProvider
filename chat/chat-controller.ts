@@ -24,10 +24,11 @@ export class ChatController {
             //     responseObj.statusCode = 204;
             // }
             // const prompt = "Create 5 funny and witty jokes about generative AI";
-            const result = await this.genAI.models.generateContent({
-                model: "gemini-2.0-flash",
-                contents: "Tell me a story in 300 words.",
-            });
+            const result ='';
+            //  await this.genAI.models.generateContent({
+            //     model: "gemini-2.0-flash",
+            //     contents: "Tell me a story in 300 words.",
+            // });
 
             console.log('result', result)
             // const text = response.text();
