@@ -21,6 +21,9 @@
   },
   "dependencies": {
     "@google/genai": "^1.7.0",
+    "@langchain/core": "^0.3.65",
+    "@langchain/google-genai": "^0.2.15",
+    "@langchain/langgraph": "^0.3.10",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "socket.io": "^4.8.1",
