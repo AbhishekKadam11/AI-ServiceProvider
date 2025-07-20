@@ -1,4 +1,4 @@
-import { GoogleGenAIConfig } from "../../config/google-genai";
+import { LangchainContainer } from "../component/langchain-container";
 import { WorkerManager } from "./worker-manager";
 
 interface IError {
@@ -7,7 +7,7 @@ interface IError {
 export class ChatService {
 
     constructor(
-        private genAI = new GoogleGenAIConfig().getGenAI()
+        private genAI = new LangchainContainer()
     ) {
 
     }
@@ -48,11 +48,8 @@ export class ChatService {
                 // }
 
             };
-            return await this.genAI.models.generateContent({
-                model: "gemini-2.0-flash",
-                contents: payload,
-                config: requestParams
-            });
+            // console.log("payload==>", payload);
+            return await this.genAI.invokeQuery(payload[0].text);
         } catch (error) {
             console.error("Error in sendGenAIRequest:", error);
             throw error;

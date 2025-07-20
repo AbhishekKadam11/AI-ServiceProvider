@@ -23,7 +23,7 @@ export class ChatRoom implements SocketInterface {
             // socket.emit('ping', 'Hi! I am a live socket connection');
             const io = WebSocket.getInstance();
             const testData = {
-                text: result?.candidates && result.candidates.length > 0 ? JSON.stringify(result.candidates[0].content) : '',
+                text: result,
                 date: new Date(),
                 reply: false,
                 type: 'text',
