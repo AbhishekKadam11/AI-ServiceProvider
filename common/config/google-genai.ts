@@ -9,8 +9,8 @@ export class GoogleGenAIConfig {
     private tools = [new TavilySearch({ maxResults: 3 })];
     private toolNode = new ToolNode(this.tools);
 
-    protected model: ChatGoogleGenerativeAI;
-    protected modelWithTools: ReturnType<ChatGoogleGenerativeAI['bindTools']>;
+    model: ChatGoogleGenerativeAI;
+    modelWithTools: ReturnType<ChatGoogleGenerativeAI['bindTools']>;
 
     constructor(private appConfig: AppEnvVariables = new AppEnvVariables()) {
         // Create a model and give it access to the tools
@@ -24,5 +24,5 @@ export class GoogleGenAIConfig {
      getLangchainGenAI(): { modelWithTools: ReturnType<ChatGoogleGenerativeAI['bindTools']>, toolNode: ReturnType<ChatGoogleGenerativeAI['bindTools']> } {
         return { modelWithTools:this.modelWithTools, toolNode: this.toolNode };
     }
-   
+
 }
