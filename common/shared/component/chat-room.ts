@@ -14,16 +14,16 @@ export class ChatRoom implements SocketInterface {
         // console.log('simulator1_Namespace socket connected');
       
         socket.on('Source', async (source: any) => {
-            console.log('simulator1_Namespace Source:', source);
+            // console.log('simulator1_Namespace Source:', source);
 
             const result = await this.chatService.sendGenAIRequest(source);
             console.log('simulator1_Namespace result:', result);
 
-            console.log('result', JSON.stringify(result))
+            // console.log('result', JSON.stringify(result))
             // socket.emit('ping', 'Hi! I am a live socket connection');
             const io = WebSocket.getInstance();
             const testData = {
-                text: result.messages[result.messages.length - 1].content,
+                text: result,
                 date: new Date(),
                 reply: false,
                 type: 'text',

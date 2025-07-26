@@ -1,5 +1,6 @@
 import { LangchainContainer } from "../component/langchain-container";
 import { WorkerManager } from "./worker-manager";
+import { AngularCodeGenerator } from "../component/angular-generator";
 
 interface IError {
     statusCode: number, response: any
@@ -7,7 +8,8 @@ interface IError {
 export class ChatService {
 
     constructor(
-        private genAI = new LangchainContainer()
+        private genAI = new LangchainContainer(),
+        private angularCodeGenerator = new AngularCodeGenerator(),
     ) {
 
     }
@@ -49,7 +51,8 @@ export class ChatService {
 
             };
             // console.log("payload==>", payload);
-            return await this.genAI.invokeQuery(payload[0].text);
+            // return await this.genAI.invokeQuery(payload[0].text);
+            return await this.angularCodeGenerator.generateAngularCode(payload[0].text);
         } catch (error) {
             console.error("Error in sendGenAIRequest:", error);
             throw error;

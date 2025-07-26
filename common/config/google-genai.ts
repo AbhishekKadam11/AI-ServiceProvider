@@ -18,11 +18,15 @@ export class GoogleGenAIConfig {
             apiKey: this.appConfig.googleGenAiApiKey,
             model: "gemini-2.0-flash",
         });
-        this.modelWithTools = this.model.bindTools(this.tools);
+        // this.modelWithTools = this.model.bindTools(this.tools);
     }
 
      getLangchainGenAI(): { modelWithTools: ReturnType<ChatGoogleGenerativeAI['bindTools']>, toolNode: ReturnType<ChatGoogleGenerativeAI['bindTools']> } {
         return { modelWithTools:this.modelWithTools, toolNode: this.toolNode };
+    }
+
+    getModel(): ChatGoogleGenerativeAI {
+        return this.model;
     }
 
 }

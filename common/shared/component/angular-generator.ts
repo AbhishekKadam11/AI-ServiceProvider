@@ -1,92 +1,31 @@
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { AIMessage, BaseMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
-import { AgentExecutor, createReactAgent, createToolCallingAgent } from "langchain/agents";
-import { DynamicTool, Tool } from "@langchain/core/tools";
-import { z } from "zod";
-import { formatXml } from "langchain/agents/format_scratchpad/xml"; // For formatting agent scratchpad
-
-// 1. Define Tools
-class CustomTool extends Tool {
-  name = "custom_tool";
-  description = "A tool to perform a custom action.";
-
-  async _call(input: string): Promise<string> {
-    // Implement tool logic here
-    return `Processed input: ${input}`;
-  }
-}
-
-export class AngularFormatter extends Tool {
-    name = "angular_formatter";
-    description = "Formats Angular TypeScript, HTML, or CSS code to adhere to best practices.";
-    schema = z.object({
-        input: z.string().optional().describe("A JSON string containing 'code' and 'fileType'."),
-    }).transform((data) => data.input);
-
-    async _call(arg: string | undefined): Promise<string> {
-        if (!arg) {
-            throw new Error("No input provided to AngularFormatterTool.");
-        }
-        let input: { code: string; fileType: "typescript" | "html" | "css" };
-        try {
-            input = JSON.parse(arg);
-        } catch (e) {
-            throw new Error("Failed to parse input for AngularFormatterTool. Expected a JSON string.");
-        }
-        const { code, fileType } = input;
-        // In a real application, you would integrate with a code formatter like Prettier here.
-        // For this example, we'll just simulate formatting.
-        console.log(`[AngularFormatterTool] Formatting ${fileType} code...`);
-        // Simple mock formatting: add a comment
-        if (fileType === "typescript") {
-            return `// Formatted by AngularFormatterTool\n${code}`;
-        } else if (fileType === "html") {
-            return `<!-- Formatted by AngularFormatterTool -->\n${code}`;
-        } else if (fileType === "css") {
-            return `/* Formatted by AngularFormatterTool */\n${code}`;
-        }
-        return code;
-    }
-}
-
-const tools = [new AngularFormatter()];
+import { LangchainContainer } from "./langchain-container";
 
 export class AngularCodeGenerator {
 
+  constructor(private langchainContainer = new LangchainContainer()) {
+    // this.codeGenerator = this.codeGenerator.bind(this);
+  }
+  
   public async generateAngularCode(description: string): Promise<any> {
 
-    // 2. Create the LLM
-    const llm = new ChatGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_GENAI_API_KEY,
-      model: "gemini-2.0-flash",
-    });
-
-    // 3. Construct the Prompt
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions. Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css). Strive for clean, idiomatic, and well-structured Angular code."],
+      // ["system", 
+      //   "You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions. Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css). Strive for clean, idiomatic, and well-structured Angular code. If you need to format code, use the 'angular_formatter' tool. After generating the code, use the 'output_tool' to restructure the outputs."],
+         ["system", 
+          `You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions, or create new Angular projects in specified locations.
+          Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css) for component generation.
+          Strive for clean, idiomatic, and well-structured Angular code.
+          When asked to create a new Angular project, use the 'create_angular_project' tool and consider this dircetory path '../../../' for creating project'.
+    `],
       new MessagesPlaceholder("chat_history"),
       ["human", "{input}"],
       new MessagesPlaceholder("agent_scratchpad"),
     ]);
 
-        // const prompt = ChatPromptTemplate.fromMessages([
-        //   ["system", "You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions. Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css). Strive for clean, idiomatic, and well-structured Angular code."],
-        //   ["human", "{input}"],
-        //   ["placeholder", "{agent_scratchpad}"], // Important for agent's internal reasoning
-        //   ["placeholder", "{tools}"], // Important for agent's internal reasoning
-        //   ["placeholder", "{tool_names}"], // Important for agent's internal reasoning
-        // ]);
-
-    // 4. Build the Agent
-    const agent = createToolCallingAgent({ llm, tools, prompt });
-
-    // 5. Create an Agent Executor
-    const agentExecutor = new AgentExecutor({ agent, tools });
-
-    const result = await agentExecutor.invoke({ input: "Create angular project with login and registration page", chat_history:[] });
-    console.log("Agent result:", result);
-    return result.output;
+    const result = await this.langchainContainer.generateAngularCode(prompt, description);
+    // console.log("Agent result:", result);
+    return result;
   }
 
 }
