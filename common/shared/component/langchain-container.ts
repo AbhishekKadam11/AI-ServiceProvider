@@ -9,67 +9,31 @@ import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import z from "zod";
 import { exec } from "child_process";
 
-// NEW TOOL: Define a tool to simulate Angular project creation
-// class AngularProjectCreatorTool extends Tool {
-//   name = "angular_project_creator";
-//   description = "Creates a new Angular project with the specified name, simulating 'ng new <projectName>'.";
-//   //@ts-ignore
-//   schema = z.object({
-//     input: z.string().describe("The name of the Angular project to create."),
-//   });
-
-//   async _call(arg: string | undefined): Promise<string> {
-//     let projectName: string;
-//     try {
-//       const parsed = this.schema.parse(JSON.parse(arg ?? "{}"));
-//       projectName = parsed.input;
-//     } catch (e) {
-//       throw new Error("Invalid input for AngularProjectCreatorTool: " + (e instanceof Error ? e.message : String(e)));
-//     }
-//     // In a real scenario, this would execute 'ng new projectName' or similar logic.
-//     // For this example, we'll just simulate success.
-//     console.log(`[AngularProjectCreatorTool] Creating Angular project: ${projectName}...`);
-//     return `Successfully created a new Angular project named '${projectName}' with basic file structure.`;
-//   }
-// }
-
-// class AngularProjectCreatorTool extends Tool {
-//   name = "angular_project_creator";
-//   description = "Creates a new Angular project with the specified name in a given directory, simulating 'ng new <projectName> --directory=<directoryPath>'.";
-//   schema = z.object({
-//     projectName: z.string().describe("The name of the Angular project to create."),
-//     directoryPath: z.string().optional().describe("The optional path where the project should be created. If not provided, it will be created in the current working directory."),
-//   });
-
-//   async _call(input: z.infer<typeof this.schema>): Promise<string> {
-//     const { projectName, directoryPath } = input;
-//     console.log("projectName input", input)
-//     // In a real scenario, this would execute 'ng new projectName --directory=directoryPath' or similar logic.
-//     // For this example, we'll just simulate success.
-//     const pathInfo = directoryPath ? ` in directory '${directoryPath}'` : "";
-//     // console.log(`[AngularProjectCreatorTool] Creating Angular project: ${projectName}${pathInfo}...`);
-//     return `Successfully created a new Angular project named '${projectName}'${pathInfo} with basic file structure.`;
-//   }
-// }
-
 class CreateAngularProjectTool extends Tool {
   name = "create_angular_project";
   description = "Creates a new Angular project with the specified name in a given directory, simulating 'ng new <projectName> --directory=<directoryPath>'.";
+  //@ts-ignore
   schema = z.object({
     projectName: z.string().describe("The name of the Angular project to create."),
     directoryPath: z.string().optional().describe("The optional path where the project should be created. If not provided, it will be created in the current working directory."),
   });
 
+  //@ts-ignore
   async _call(input: z.infer<typeof this.schema>): Promise<string> {
    try {
       const { projectName, directoryPath } = input;
-      const command = `ng new ${projectName} --directory ${directoryPath}`;
-      const { stdout, stderr } = await exec(command); // Assuming 'exec' from 'child_process/promises'
-      if (stderr) {
-        //ts-ignore
-        throw new Error(stderr);
-      }
-      return `Angular project '${projectName}' created successfully in '${directoryPath}'.\n${stdout}`;
+      const pathInfo = directoryPath ? ` in directory '${directoryPath}'` : "";
+      exec(`ng new ${projectName} --directory ${directoryPath}/${projectName} --defaults`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          return;
+        }
+      });
+      return `Angular project '${projectName}' created successfully in '${directoryPath}'.`;
     } catch (error) {
       return `Error creating Angular project: ${error.message}`;
     }
