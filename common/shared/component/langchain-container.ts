@@ -4,48 +4,16 @@ import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Tool } from "@langchain/core/tools";
 import { AngularFormatterTool } from "../utils/angular-formatter";
+import { CreateAngularProjectTool } from "../utils/project-creator";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
-import z from "zod";
-import { exec } from "child_process";
-
-class CreateAngularProjectTool extends Tool {
-  name = "create_angular_project";
-  description = "Creates a new Angular project with the specified name in a given directory, simulating 'ng new <projectName> --directory=<directoryPath>'.";
-  //@ts-ignore
-  schema = z.object({
-    projectName: z.string().describe("The name of the Angular project to create."),
-    directoryPath: z.string().optional().describe("The optional path where the project should be created. If not provided, it will be created in the current working directory."),
-  });
-
-  //@ts-ignore
-  async _call(input: z.infer<typeof this.schema>): Promise<string> {
-   try {
-      const { projectName, directoryPath } = input;
-      const pathInfo = directoryPath ? ` in directory '${directoryPath}'` : "";
-      exec(`ng new ${projectName} --directory ${directoryPath}/${projectName} --defaults`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`stderr: ${stderr}`);
-          return;
-        }
-      });
-      return `Angular project '${projectName}' created successfully in '${directoryPath}'.`;
-    } catch (error) {
-      return `Error creating Angular project: ${error.message}`;
-    }
-  }
-}
-
 
 export class LangchainContainer {
 
     protected modelWithTools: ReturnType<ChatGoogleGenerativeAI['bindTools']>;
     private toolNode: ReturnType<ChatGoogleGenerativeAI['bindTools']>;
     private model: ChatGoogleGenerativeAI;
+    //@ts-ignore
     private tools: Tool[] = [new AngularFormatterTool(), new CreateAngularProjectTool()];
 
     constructor(private genAIllm = new GoogleGenAIConfig()) {
@@ -107,7 +75,7 @@ export class LangchainContainer {
     
         const agentExecutor = new AgentExecutor({ agent, tools: this.tools, verbose: true });
     
-        const result = await agentExecutor.invoke({ input: "Create angular project with name testing with login and registration page", chat_history:[] });
+        const result = await agentExecutor.invoke({ input: description, chat_history:[] });
         // console.log("Agent result:", result);
         return result.output;
       }
