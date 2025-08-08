@@ -1,6 +1,7 @@
 import z from "zod";
-import { exec, spawn } from "child_process";
+import { spawn } from "child_process";
 import { Tool } from "@langchain/core/tools";
+import { WorkerManager } from "../service/worker-manager";
 
 export class CreateAngularProjectTool extends Tool {
     name = "create_angular_project";
@@ -50,8 +51,12 @@ export class CreateAngularProjectTool extends Tool {
                 });
             }
             try {
-                const lsOutput = await executeCommand(`ng new ${projectName}`, [`--directory ${directoryPath}/${projectName}`, `--defaults`]);
-                console.log('create_angular_project output:\n', lsOutput);
+                let taskToExecute = new Map<string, any>();
+               
+                const lsOutput = taskToExecute.set('new_project', await executeCommand(`ng new ${projectName}`, [`--directory ${directoryPath}/${projectName}`, `--defaults`, `--interactive=false`]));
+                // const lsOutput = await executeCommand(`ng new ${projectName}`, [`--directory ${directoryPath}/${projectName}`, `--defaults`, `--interactive=false`]);
+                this.taskWorkerHandler(taskToExecute);
+                console.log('create_angular_project lsoutput:\n', lsOutput);
                 return `Executed command output: ${lsOutput}`;
 
             } catch (error: any) {
@@ -60,7 +65,16 @@ export class CreateAngularProjectTool extends Tool {
             }
             //return `Angular project '${projectName}' created successfully in '${directoryPath}'.`;
         } catch (error) {
-            return `Error creating Angular project: ${error.message}`;
+            return `Error creating Angular project: ${error}`;
         }
     }
+    
+    private taskWorkerHandler(taskToExecute: Map<string, any>) {
+            const workerManager = new WorkerManager(taskToExecute);
+            workerManager.worker.on('message', (result) => {
+                console.log("result==>", result);
+            });
+            workerManager.assign(taskToExecute)
+    
+     }
 }

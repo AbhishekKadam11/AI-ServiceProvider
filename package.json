@@ -6,6 +6,7 @@
   "scripts": {
     "build": "cd chat && npx rimraf dist && tsc",
     "dev": "concurrently \"npx tsc -p chat --watch\" \"nodemon --watch './**/*.ts' --exec nodemon chat/dist/chat/index.js\"",
+    "start": "node chat/dist/chat/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Abhishek.K",
