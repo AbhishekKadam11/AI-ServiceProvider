@@ -1,13 +1,13 @@
 import { Tool } from "@langchain/core/tools";
-import { z } from "zod"; 
+import { z } from "zod";
 
 // Define a custom tool (optional, but good for structured tasks)
 // For demonstration, let's imagine a tool that "formats" Angular code.
 // In a real scenario, this might call Prettier or an Angular CLI command.
 export class AngularFormatterTool extends Tool {
 
- name = "angular_formatter";
-    description = "Formats Angular TypeScript, HTML, or CSS code to adhere to best practices.";
+    name = "angular_formatter";
+    description = "Formats Angular TypeScript, HTML, or SCSS code to adhere to best practices.";
     //@ts-ignore
     schema = z.object({
         input: z.string().optional().describe("A JSON string containing 'code' and 'fileType'."),
@@ -17,7 +17,7 @@ export class AngularFormatterTool extends Tool {
         if (!arg) {
             throw new Error("No input provided to AngularFormatterTool.");
         }
-        let input: { code: string; fileType: "typescript" | "html" | "css" };
+        let input: { code: string; fileType: "typescript" | "html" | "scss" };
         try {
             input = JSON.parse(arg);
         } catch (e) {
@@ -32,7 +32,7 @@ export class AngularFormatterTool extends Tool {
             return `// Formatted by AngularFormatterTool\n${code}`;
         } else if (fileType === "html") {
             return `<!-- Formatted by AngularFormatterTool -->\n${code}`;
-        } else if (fileType === "css") {
+        } else if (fileType === "scss") {
             return `/* Formatted by AngularFormatterTool */\n${code}`;
         }
         return code;

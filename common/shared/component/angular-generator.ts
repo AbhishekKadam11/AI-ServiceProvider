@@ -12,12 +12,21 @@ export class AngularCodeGenerator {
     const prompt = ChatPromptTemplate.fromMessages([
       // ["system", 
       //   "You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions. Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css). Strive for clean, idiomatic, and well-structured Angular code. If you need to format code, use the 'angular_formatter' tool. After generating the code, use the 'output_tool' to restructure the outputs."],
-         ["system", 
-          `You are an expert Angular developer AI. Your task is to generate complete and functional Angular components (TypeScript, HTML, CSS) based on user descriptions.
-          Always provide all three parts: TypeScript (.ts), HTML (.html), and CSS (.css) for component generation.
+    //      ["system", 
+    //       `You are an expert Angular developer AI. Your task is to generate and write complete and functional Angular components (TypeScript, HTML, CSS) using angular_formatter tool based on user descriptions.
+    //       Always provide all three parts: TypeScript (.ts), HTML (.html), and SCSS (.scss) for component generation.
+    //       Strive for clean, idiomatic, and well-structured Angular code.
+    //       When asked to create a new Angular project, use the 'create_angular_project' tool and consider this dircetory path './cookbook/angular' for creating project. in case of any error while executing tools return error in response
+    //       After new new project create use the angular_formatter tool to write the code in that projct directory'.
+    // `],
+     ["system", 
+        `You are an expert Angular developer AI. 
+          Your task is to create new angular project if project does not exist in path './cookbook/angular'  
+          generate and write complete and functional Angular components (TypeScript, HTML, SCSS) using create_angular_component tool based on user descriptions.
           Strive for clean, idiomatic, and well-structured Angular code.
-          When asked to create a new Angular project, use the 'create_angular_project' tool and consider this dircetory path './cookbook/angular' for creating project. in case of any error while executing tools return error in response
-          After new new project create use the angular_formatter tool to write the code in that projct directory'.
+          When asked to create a new Angular project use the 'create_angular_project' tool 
+          For writting and creating component use create_angular_component use projectRootPath to './cookbook/angular', routingModulePath to './cookbook/angular/{projectName}/src/app/app.routes.ts' 
+          '.
     `],
       new MessagesPlaceholder("chat_history"),
       ["human", "{input}"],

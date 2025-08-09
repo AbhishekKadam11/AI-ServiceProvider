@@ -75,15 +75,13 @@ if (!isMainThread) {
                 }
                 console.log("received task", req.data)
 
-                const result: any =// new BackgroundAggregate(req.data);
+                //  const result: any =// new BackgroundAggregate(req.data);
                 // console.log("result", result)
-                // if (parentPort) {
-                //     parentPort?.postMessage(
-                //         JSON.stringify(result)
-                //     );
-                // }
+                if (parentPort) {
+                    parentPort?.postMessage(JSON.stringify(req.data));
+                }
                 //@ts-ignore
-                workersInBacklog.push(result);
+                workersInBacklog.push(req.data);
                 break;
             default:
                 console.log("task not found");

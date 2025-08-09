@@ -72,7 +72,7 @@ export class CreateAngularProjectTool extends Tool {
     private taskWorkerHandler(taskToExecute: Map<string, any>) {
             const workerManager = new WorkerManager(taskToExecute);
             workerManager.worker.on('message', (result) => {
-                console.log("result==>", result);
+                console.log("taskWorkerHandler result==>", result);
             });
             workerManager.assign(taskToExecute)
     

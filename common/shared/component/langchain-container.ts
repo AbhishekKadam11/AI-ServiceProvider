@@ -5,6 +5,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Tool } from "@langchain/core/tools";
 import { AngularFormatterTool } from "../utils/angular-formatter";
 import { CreateAngularProjectTool } from "../utils/project-creator";
+import { CreateAngularComponentTool } from "../utils/angular-editor.tool";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 
@@ -14,7 +15,7 @@ export class LangchainContainer {
     private toolNode: ReturnType<ChatGoogleGenerativeAI['bindTools']>;
     private model: ChatGoogleGenerativeAI;
     //@ts-ignore
-    private tools: Tool[] = [new AngularFormatterTool(), new CreateAngularProjectTool()];
+    private tools: Tool[] = [ new CreateAngularProjectTool(), new CreateAngularComponentTool()];
 
     constructor(private genAIllm = new GoogleGenAIConfig()) {
         this.model = this.genAIllm.getModel();
